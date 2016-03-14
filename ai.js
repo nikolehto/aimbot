@@ -4,6 +4,7 @@ var _ = require("lodash");
 var position = require("../../position.js");
 
 // Change botNames and teamName to your choice.
+
 var botNames = [
   "Tupu",
   "Hupu",
@@ -13,16 +14,9 @@ var botNames = [
 module.exports = function Ai() {
   function makeDecisions(roundId, events, bots, config) {
     bots.forEach(function(bot) {
-      var ps = position.neighbours(position.make(bot.x, bot.y), config.move);
-      var moveLength=0;
-	  var loopLimit=100;
-	  var pos;
-	  while (loopLimit>0 && moveLength < 2) { // Tähän lisäehtona että pos on kentän rajojen sisällä
-		  pos = ps[randInt(0, ps.length - 1)];
-		  moveLength = position.distance(position.make(bot.x, bot.y), pos);
-		  loopLimit--;
-	  }
-	  console.log(moveLength);
+	  var pos = selectMove(config, bot);
+	  
+	  console.log(pos.x, pos.y);
       bot.move(pos.x, pos.y);
     });
 
@@ -32,6 +26,27 @@ module.exports = function Ai() {
       }
     });
   }
+  
+  function selectMove(config, bot) {
+      // Liiku aina niin kauas kuin mahdollista, huomioi kentän reunat
+	  // Tänne olisi hyvä toteuttaa: Älä liiku lähelle omia, yritä liikkua lähelle vihollisia? 
+	  var ps = position.neighbours(position.make(bot.x, bot.y), config.move);
+      var moveLength=0;
+	  var loopLimit=100;
+	  var pos;
+	  while (loopLimit>0 && moveLength<config.move) { 
+		  pos = ps[randInt(0, ps.length - 1)];
+		  moveLength = position.distance(position.make(bot.x, bot.y), pos);
+		  if (position.distance(pos, position.origo) > config.fieldRadius) {
+			moveLength = 0;	
+		  }
+		  loopLimit--;
+	  }
+	  
+	  return pos;
+	  
+  }
+  
 
   function randInt(min, max) {
     var range = max - min;
