@@ -14,7 +14,15 @@ module.exports = function Ai() {
   function makeDecisions(roundId, events, bots, config) {
     bots.forEach(function(bot) {
       var ps = position.neighbours(position.make(bot.x, bot.y), config.move);
-      var pos = ps[randInt(0, ps.length - 1)];
+      var moveLength=0;
+	  var loopLimit=100;
+	  var pos;
+	  while (loopLimit>0 && moveLength < 2) { // Tähän lisäehtona että pos on kentän rajojen sisällä
+		  pos = ps[randInt(0, ps.length - 1)];
+		  moveLength = position.distance(position.make(bot.x, bot.y), pos);
+		  loopLimit--;
+	  }
+	  console.log(moveLength);
       bot.move(pos.x, pos.y);
     });
 
