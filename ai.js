@@ -13,6 +13,11 @@ var botNames = [
 
 module.exports = function Ai() {
   function makeDecisions(roundId, events, bots, config) {
+	// TODO:
+	// scannablePositions = position.origo position.neighbours(config.fieldRadius-#radarradius)
+	// Poista omien bottien naapuristot tästä listasta, huomioi myös bottien tulevat liikkeet. 
+	
+	
     bots.forEach(function(bot) {
 	  var pos = selectMove(config, bot);
 	  
