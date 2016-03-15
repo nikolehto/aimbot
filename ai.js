@@ -13,16 +13,19 @@ var botNames = [
 
 module.exports = function Ai() {
   function makeDecisions(roundId, events, bots, config) {
+	var radarPositions = position.neighbours(position.origo, config.fieldRadius - config.radar);
+	// em. tekee listan kaikista sijainneista joista on mahdollista skannata kartan reunaan asti. 
 	// TODO:
-	// scannablePositions = position.origo position.neighbours(config.fieldRadius-#radarradius)
 	// Poista omien bottien naapuristot tästä listasta, huomioi myös bottien tulevat liikkeet. 
 	
 	
     bots.forEach(function(bot) {
-	  var pos = selectMove(config, bot);
+	  //var pos = selectMove(config, bot);
+	  var pos = selectRadar(config, bot, radarPositions);
 	  
 	  console.log(pos.x, pos.y);
-      bot.move(pos.x, pos.y);
+      //bot.move(pos.x, pos.y);
+	  bot.radar(pos.x, pos.y);
     });
 
     _.each(events, function(event) {
@@ -31,6 +34,8 @@ module.exports = function Ai() {
       }
     });
   }
+  
+  
   
   function selectMove(config, bot) {
       // Liiku aina niin kauas kuin mahdollista, huomioi kentän reunat
@@ -48,8 +53,21 @@ module.exports = function Ai() {
 		  loopLimit--;
 	  }
 	  
-	  return pos;
+	  return pos;  
+  }
+  
+    function selectRadar(config, bot, radarPositions) {
+      // Skannaa vain kenttää, (väliaikainen älä skannaa itseä)
+      var minDistanceFromShip=0; // Korvaa tämä poistamalla kaikki laivojen sijainnit radarPositionsista
+	  var loopLimit=100;
+	  var pos;
+	  while (loopLimit>0 && minDistanceFromShip<config.radar) { 
+		  pos = radarPositions[randInt(0, radarPositions.length - 1)];
+		  minDistanceFromShip = position.distance(position.make(bot.x, bot.y), pos);
+		  loopLimit--;
+	  }
 	  
+	  return pos;  
   }
   
 
