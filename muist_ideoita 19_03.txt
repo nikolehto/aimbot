@@ -1,0 +1,67 @@
+global ...
+
+....
+
+
+tekoalyfunktio{
+	
+
+
+	prioriteetit = getPelitilanneprioriteetit();
+
+	vihollisenepävarmatpaikat = epävarmatPaikat(events); //tässä katotaan edellisvuoron ampumisten perusteella + eventit perusteella (hit, ei hit) jokin epävarma paikka missä vihollinen on
+	//epävarmat paikat siis ovat TARKKOJA koordinaatteja, mutta sen TODENNÄKÖISYYS onko vihollinen niissä vai ei vaihtelee.
+
+	
+	ampumiskykyiset_botit = [];
+	
+	scanloopers_count = 0;
+	ampumiskykyiset_epävarmat_count = 0;
+
+	for p in prioriteetit:
+
+		for bot in bots:	//botti otetaan listasta pois kun löytyy tehtävä
+
+			switch(p):
+				case väistä:
+					check from events if detected -> yes -> väistä+merkkaakahdenliikkeenväistöön : no -> continue;
+					check from events if hit -> yes -> väistä : no -> continue;
+				case kahdenliikkeenväistö:
+					check from taskList -> yes -> väistäsuuntaan x: no ->continue;
+				
+				case scanloop: //scanloop on periaatteessa toiselta nimeltään skannaa_varmapaikka
+					check from events count(enemydetected) != count(scanlooperps_count) -> yes -> skanlooppaa vihollista : no ->continue;						
+						scanloopers_count +1;
+				case ampuminen:
+					check from events if enemydetected -> yes -> lisää ampumiskykyiset_botit : no -> continue; //siis varmat vihollisen paikat
+				case ampuminen_epävarmapaikka:
+					check from epävarmatpaikat -> yes -> lisää ampumiskysyisetbotit JOS ampumiskykyiset_epävarmat_count != 0 : no ->continue
+						ampumiskykyiset_epävarmat_count +1;
+				case scannaa_epävarmapaikka:
+					check from epävarmatpaikat -> yes -> skannaa mahd niin että moni epävarma paikka peittyy : no ->continue;
+
+				case scannaus: //usein matalin prioriteetti
+					anna skannausfunktiosta paras piste skannata ja skannaa;
+	
+	//siis aina kun skannataan niin käytetään skannausfunktiota joka hoitaa myös jo skannattujen alueiden tarkkailun ja kaikki mahd. visuaalisten ja sen ettei samanaikaisesti skannata päällekkäisiä
+
+
+				
+	//poistutaan prioriteetit forloopista
+	//tässä vaiheessa meillä on siis listallinen ampumiskykyisiä botteja	
+	//kirjoitetaan siis eri vaihtoehtoja tahi taktiikoita jotka toteutetaan näillä boteilla
+
+	
+	//todennäköisin: yksi kohde + ei epävarmoja = ammutaan yhtä vihollista kaikilla. Giv 'em hell!!!!
+		//ja tähän sitten eri osumakuviot eri määrälle botteja
+
+	//vain epävarmoja kohteita = ammutaan yhdellä botilla jokaiseen epävarmaan pisteeseen mitä vain on
+
+	//mitä tehdään kun on kaksi varmaa havaintoa ja käytettävissä 3 bottia?
+	//tai mitä tehdä kun on x varmaa havaintoa ja y bottia
+	//tai mitä tehdä kun on x varmaa havaintoa ja y epävarmaa kohdetta ja z bottia käytettävissä
+
+
+	//kutsutaan ampumafunktiota joka huolehtii ettei omiin osu.
+
+]
