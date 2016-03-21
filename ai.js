@@ -23,6 +23,8 @@ module.exports = function Ai() {
 
 	//var availableBots = []; // Meidän elossa olevat botit   /avain botin id ja arvo botin indeksi
     
+
+	var ourBotIds = [];
     var availableBots = {};
     
 	var die = []; // Viimekierroksen kuolleet botit
@@ -39,6 +41,7 @@ module.exports = function Ai() {
 	
 	// Alusta elossa olevat botit
 	bots.forEach(function(bot) {
+		ourBotIds.push(bot.botId);
 		if (bot.alive) {
 			//availableBots.push(bot)
             availableBots[bot.botId] = bots.indexOf(bot);
@@ -63,7 +66,7 @@ module.exports = function Ai() {
           console.log("We detected bot at", event.pos.x, event.pos.y); 
 		  
 			if (event.event === "see") {	// Meidät on myös havaittu
-				if (availableBots.indexOf(event.source)) {
+				if (ourBotIds.indexOf(event.source)) {
 					var tempevent = {};
 					tempevent.event = event.event;
 					tempevent.botId = event.source;
