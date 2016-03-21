@@ -81,28 +81,20 @@ module.exports = function Ai() {
     for (var j = 0; j < priorities.length; j++) {
         var pr = priorities[j];
         
-        
-        //ourBotsAlive.forEach(function(bot) {
-        
-        for(var i = availableBots.length -1; i >= 0 ; i--){
-            var bot = availableBots[i];
-            //if(elements[i] == 5){
-            //    elements.splice(i, 1);
-        
-            
-        
+   
             switch(pr){
                 case "Dodge":
                     //jos huomattu tai osunut niin väistä
-                    //if(enemyDetectedOurBots.indexOf(bot.botId) != -1){
-                        var pos = selectMove(config, bot);
-
-                        console.log(pos.x, pos.y);
-                        bot.move(pos.x, pos.y);
-                        
-                        //poisto listasta
-                        //bots.splice(i, 1);
-                    //}
+                    detected.forEach(function(det) {
+						var botId = det.botId;
+						var bot = findBot(botId);
+						var pos = selectMove(config, bot);
+						console.log(pos.x, pos.y);
+						bot.move(pos.x, pos.y);
+						
+						delete availableBots[botId];
+						});
+               
                 break;
                 case "Attack":
                 //jos vihollinen huomattu niin ammu
@@ -119,7 +111,7 @@ module.exports = function Ai() {
                 default:
             
             }
-        }
+      
     }
     
     /*
