@@ -56,13 +56,29 @@ module.exports = function Ai() {
         if (event.event === "damaged") {
           damaged.push(event);
 		  console.log("Someone hit us: ", event.botId);
-        } else if (event.event === "see") {
+        } 
+		
+		else if (event.event === "see" || event.event === "radarEcho") { 
 		  see.push(event);
           console.log("We detected bot at", event.pos.x, event.pos.y); 
-        } else if (event.event === "hit") {
+		  
+			if (event.event === "see") {	// Meidät on myös havaittu
+				if (availableBots.indexOf(event.source)) {
+					var tempevent = {};
+					tempevent.event = event.event;
+					tempevent.botId = event.source;
+					detected.push(tempevent);
+				}
+			}
+		} 
+		
+		else if (event.event === "hit") {
 		  hit.push(event);
           console.log("Our bot hit:", event.botId);
-		} else if (event.event === "detected") {
+		} 
+		
+
+		if (event.event === "detected") {
 		  detected.push(event);
           //console.log("Enemy detected our bot at", event.pos.x, event.pos.y); 
         }
