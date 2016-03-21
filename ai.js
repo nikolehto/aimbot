@@ -127,6 +127,20 @@ module.exports = function Ai() {
                 break;
                 case "Scan":
                     //skannaa satunnaista paikkaa
+                    
+                    //noustaan perse edellä puuhun
+                    for (var botId in availableBots) {
+                        if (availableBots.hasOwnProperty(botId)) {
+                            // do stuff
+                            var bot = findBot2(bots, botId);
+                            
+                            var pos = selectRadar(config, bot,radarPositions);
+                            console.log(pos.x, pos.y);
+                            bot.radar(pos.x, pos.y);
+                            
+                            delete availableBots[botId];
+                            }
+                    }
                 break;
                 
                 
