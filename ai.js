@@ -78,39 +78,38 @@ module.exports = function Ai() {
 	// Poista omien bottien naapuristot tästä listasta, huomioi myös bottien tulevat liikkeet. 
 	
 	var botsOnMission = [];
-    for (j = 0; j < priorities.length; j++) {
-        pr = priorities[j];
+    for (var j = 0; j < priorities.length; j++) {
+        var pr = priorities[j];
         
         
         //ourBotsAlive.forEach(function(bot) {
         
-        for(var i = ourBotsAlive.length -1; i >= 0 ; i--){
-            bot = ourBotsAlive[i]
+        for(var i = availableBots.length -1; i >= 0 ; i--){
+            var bot = availableBots[i];
             //if(elements[i] == 5){
             //    elements.splice(i, 1);
         
-
+            
         
             switch(pr){
                 case "Dodge":
                     //jos huomattu tai osunut niin väistä
-                    if(enemyDetectedOurBots.indexOf(bot.botId) != -1){
+                    //if(enemyDetectedOurBots.indexOf(bot.botId) != -1){
                         var pos = selectMove(config, bot);
-                        //var pos = selectRadar(config, bot, radarPositions);
 
                         console.log(pos.x, pos.y);
                         bot.move(pos.x, pos.y);
                         
                         //poisto listasta
-                        bots.splice(i, 1);
-                    }
+                        //bots.splice(i, 1);
+                    //}
                 break;
                 case "Attack":
                 //jos vihollinen huomattu niin ammu
-                    if (detectedEnemyBots.length != 0){
+                    //if (detectedEnemyBots.length != 0){
                         
                         
-                    }
+                    //}
                 break;
                 case "Scan":
                     //skannaa satunnaista paikkaa
@@ -123,7 +122,7 @@ module.exports = function Ai() {
         }
     }
     
-    
+    /*
     ourBotsAlive.forEach(function(bot) {
 
 	  var pos = selectMove(config, bot);
@@ -133,7 +132,7 @@ module.exports = function Ai() {
       bot.move(pos.x, pos.y);
 	  //bot.radar(pos.x, pos.y);
     });
-
+*/
     _.each(events, function(event) {
       if (event.event === "noaction") {
         console.log("Bot did not respond in required time", event.data);
