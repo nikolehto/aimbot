@@ -67,7 +67,53 @@ module.exports = function Ai() {
 	// TODO:
 	// Poista omien bottien naapuristot tästä listasta, huomioi myös bottien tulevat liikkeet. 
 	
-	
+	var botsOnMission = [];
+    for (j = 0; j < priorities.length; j++) {
+        pr = priorities[j];
+        
+        
+        //ourBotsAlive.forEach(function(bot) {
+        
+        for(var i = ourBotsAlive.length -1; i >= 0 ; i--){
+            bot = ourBotsAlive[i]
+            //if(elements[i] == 5){
+            //    elements.splice(i, 1);
+        
+
+        
+            switch(pr){
+                case "Dodge":
+                    //jos huomattu tai osunut niin väistä
+                    if(enemyDetectedOurBots.indexOf(bot.botId) != -1){
+                        var pos = selectMove(config, bot);
+                        //var pos = selectRadar(config, bot, radarPositions);
+
+                        console.log(pos.x, pos.y);
+                        bot.move(pos.x, pos.y);
+                        
+                        //poisto listasta
+                        bots.splice(i, 1);
+                    }
+                break;
+                case "Attack":
+                //jos vihollinen huomattu niin ammu
+                    if (detectedEnemyBots.length != 0){
+                        
+                        
+                    }
+                break;
+                case "Scan":
+                    //skannaa satunnaista paikkaa
+                break;
+                
+                
+                default:
+            
+            }
+        }
+    }
+    
+    
     ourBotsAlive.forEach(function(bot) {
 	  var pos = selectMove(config, bot);
 	  //var pos = selectRadar(config, bot, radarPositions);
@@ -121,7 +167,9 @@ module.exports = function Ai() {
   
 
   function getPriorities(events) {
-	
+        var taskPriorities = ["Dodge", "Shoot", "Scan"];
+  
+        return taskPriorities;
   }
   
   function randInt(min, max) {
