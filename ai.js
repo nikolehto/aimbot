@@ -123,8 +123,20 @@ module.exports = function Ai() {
                 break;
                 case "Attack":
                 //jos vihollinen huomattu niin ammu
-                    //if (detectedEnemyBots.length != 0){
-                        
+                    if(see.length != 0){//ampuu aina yhtä havaittua kaikilla
+                        for (var botId in availableBots) {
+                            if (availableBots.hasOwnProperty(botId)) {
+                                var bot = findBot2(bots, botId);
+                                console.log("ammu");
+                                var pos = see[0].pos;
+                                console.log(pos.x, pos.y);
+                                bot.cannon(pos.x, pos.y);
+                                
+                                delete availableBots[botId];
+                            }
+                        }
+                    
+                    }
                         
                     //}
                 break;
@@ -134,7 +146,6 @@ module.exports = function Ai() {
                     //noustaan perse edellä puuhun
                     for (var botId in availableBots) {
                         if (availableBots.hasOwnProperty(botId)) {
-                            // do stuff
                             var bot = findBot2(bots, botId);
                             
                             var pos = selectRadar(config, bot,radarPositions);
@@ -175,7 +186,7 @@ module.exports = function Ai() {
     function findBot2(allbots, botId){
         var palautettava;
         allbots.forEach(function(bot) {
-            console.log(bot.botId + " == " + botId);
+            //console.log(bot.botId + " == " + botId);
             if(String(bot.botId) == String(botId)){
                 palautettava = bot;               
             }
@@ -220,7 +231,7 @@ module.exports = function Ai() {
   
 
   function getPriorities(events) {
-        var taskPriorities = ["Dodge", "Shoot", "Scan"];
+        var taskPriorities = ["Dodge", "Attack", "Scan"];
   
         return taskPriorities;
   }
