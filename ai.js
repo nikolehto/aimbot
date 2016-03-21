@@ -21,37 +21,47 @@ module.exports = function Ai() {
   function makeDecisions(roundId, events, bots, config) {
   
 
-	var ourBotsAlive = []; // Meidän elossa olevat botit
-	var enemyHitOurBots = [];  // Meidän botit joita vihollinen osui
-	var detectedEnemyBots = []; // Vihollisen botit jotka havaittiin  
+	var availableBots = []; // Meidän elossa olevat botit
+	var die = []; // Viimekierroksen kuolleet botit
+
+	
+	// Meidän toimet 
+	var hit = []; // Osutut botit
+	var see  = []; // Nähdyt botit. Pelkkiä pos objekteja 
+
+	
+	// Vihollisen toimet
+	var damaged = [];  // Meidän botit joita vihollinen osui
+	var detected = []; // Vihollinsen havaitsemat meidän botit
 	
 	// Alusta elossa olevat botit
 	bots.forEach(function(bot) {
 		if (bot.alive) {
-			ourBotsAlive.push(bot)
+			availableBots.push(bot)
 		}
 	});
 	
-	
-	ourBotsAlive.forEach(function(bot) {
+	/*
+	availableBots.forEach(function(bot) {
 		console.log("Our bot is alive:", bot.botId);
 	});
-	
+	*/
 
-  
-
-  
 	events.forEach(function(event) {
         if (event.event === "damaged") {
-          console.log("Someone hit us: ", event.botId);
+          damaged.push(event);
+		  console.log("Someone hit us: ", event.botId);
         } else if (event.event === "see") {
-          console.log("Detected bot at", event.pos.x, event.pos.y); 
+		  see.push(event);
+          console.log("We detected bot at", event.pos.x, event.pos.y); 
         } else if (event.event === "hit") {
-        // we hit!
+		  hit.push(event);
           console.log("Our bot hit:", event.botId);
-		  if (event.botId) {
-			}
-		}
+		} else if (event.event === "detected") {
+		  detected.push(event);
+          console.log("Enemy detected our bot at", event.pos.x, event.pos.y); 
+        }
+		
 		  else if (event.event === "message") {
           var friendlyMessage = event.data.source.player === playerId;
           console.info("MESSAGE", event.data.source, event.data.messageId, event.data.message, friendlyMessage);
@@ -115,6 +125,7 @@ module.exports = function Ai() {
     
     
     ourBotsAlive.forEach(function(bot) {
+
 	  var pos = selectMove(config, bot);
 	  //var pos = selectRadar(config, bot, radarPositions);
 	  
