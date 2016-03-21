@@ -41,13 +41,11 @@ module.exports = function Ai() {
 	bots.forEach(function(bot) {
 		if (bot.alive) {
 			//availableBots.push(bot)
-            availableBots[String(bot.botId)] = bots.indexOf(bot);
+            availableBots[bot.botId] = bots.indexOf(bot);
             
 		}
 	});
-    //console.log(availableBots);
-    //JSON.stringify(availableBots);
-	
+
 	/*
 	availableBots.forEach(function(bot) {
 		console.log("Our bot is alive:", bot.botId);
@@ -94,9 +92,8 @@ module.exports = function Ai() {
                     //jos huomattu tai osunut niin väistä
                     detected.forEach(function(det) {
 						var botId = det.botId;
-                        console.log(botId);
-                        //console.log(availableBots);
-						var bot = findBot(bots, availableBots, botId);
+
+                        var bot = findBot2(bots, botId);
 						var pos = selectMove(config, bot);
 						console.log(pos.x, pos.y);
 						bot.move(pos.x, pos.y);
@@ -141,13 +138,17 @@ module.exports = function Ai() {
     });
   }
   
-  
-    function findBot(allbots, botinfo, botId){
-        //console.log(botId);
-        //console.log(botinfo);
-        //console.log(allbots);
-        //console.log(allbots[botinfo[String(botId)]]);
-        return allbots[botinfo[String(botId)]];  
+    
+    function findBot2(allbots, botId){
+        var palautettava;
+        allbots.forEach(function(bot) {
+            console.log(bot.botId + " == " + botId);
+            if(String(bot.botId) == String(botId)){
+                palautettava = bot;               
+            }
+        });
+        
+        return palautettava;
     }
   
   
