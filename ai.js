@@ -21,7 +21,10 @@ module.exports = function Ai() {
   function makeDecisions(roundId, events, bots, config) {
   
 
-	var availableBots = []; // Meidän elossa olevat botit
+	//var availableBots = []; // Meidän elossa olevat botit   /avain botin id ja arvo botin indeksi
+    
+    var availableBots = {};
+    
 	var die = []; // Viimekierroksen kuolleet botit
 
 	
@@ -37,9 +40,13 @@ module.exports = function Ai() {
 	// Alusta elossa olevat botit
 	bots.forEach(function(bot) {
 		if (bot.alive) {
-			availableBots.push(bot)
+			//availableBots.push(bot)
+            availableBots[String(bot.botId)] = bots.indexOf(bot);
+            
 		}
 	});
+    //console.log(availableBots);
+    //JSON.stringify(availableBots);
 	
 	/*
 	availableBots.forEach(function(bot) {
@@ -59,7 +66,7 @@ module.exports = function Ai() {
           console.log("Our bot hit:", event.botId);
 		} else if (event.event === "detected") {
 		  detected.push(event);
-          console.log("Enemy detected our bot at", event.pos.x, event.pos.y); 
+          //console.log("Enemy detected our bot at", event.pos.x, event.pos.y); 
         }
 		
 		  else if (event.event === "message") {
@@ -87,7 +94,9 @@ module.exports = function Ai() {
                     //jos huomattu tai osunut niin väistä
                     detected.forEach(function(det) {
 						var botId = det.botId;
-						var bot = findBot(botId);
+                        console.log(botId);
+                        //console.log(availableBots);
+						var bot = findBot(bots, availableBots, botId);
 						var pos = selectMove(config, bot);
 						console.log(pos.x, pos.y);
 						bot.move(pos.x, pos.y);
@@ -132,6 +141,14 @@ module.exports = function Ai() {
     });
   }
   
+  
+    function findBot(allbots, botinfo, botId){
+        //console.log(botId);
+        //console.log(botinfo);
+        //console.log(allbots);
+        //console.log(allbots[botinfo[String(botId)]]);
+        return allbots[botinfo[String(botId)]];  
+    }
   
   
   function selectMove(config, bot) {
