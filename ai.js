@@ -126,8 +126,6 @@ module.exports = function Ai() {
                 //jos vihollinen huomattu niin ammu
                     if(see.length != 0){//ampuu aina yhtä havaittua kaikilla
                         
-                        //switch(
-                        
                         var availableCount = Object.keys(availableBots).length;
                         var coordinateAdditions = [];
                         switch(availableCount){
@@ -168,7 +166,19 @@ module.exports = function Ai() {
 												isAbleToShoot = 1;
 												break;
 											}	
+                                            
+                                            var testPos = pos;
+                                            
+                                            testPos.x = testPos.x - a[0];
+                                            testPos.y = testPos.y - a[1];
+                                            
+                                            if(isInsideMap(config, testPos) === false){
+                                                isAbleToShoot = 0;
+                                            }
+                                            
 										}
+                                        
+                                        
 										
 										if (isAbleToShoot == 1) {
 											bot.cannon(shootx, shooty); 
@@ -212,6 +222,15 @@ module.exports = function Ai() {
 											isAbleToShoot = 1;
 										}	
                                         
+                                        var testPos = pos;
+                                        
+                                        testPos.x = testPos.x - a[0];
+                                        testPos.y = testPos.y - a[1];
+                                        
+                                        if(isInsideMap(config, testPos) === false){
+                                            isAbleToShoot = 0;
+                                        }
+                                        
 										if(isAbleToShoot==1) {
 											bot.cannon(pos.x - a[0], pos.y - a[1]);
 											delete availableBots[botId];
@@ -248,7 +267,16 @@ module.exports = function Ai() {
 										
 										if (minDistanceFromShip > config.cannon) {
 											isAbleToShoot = 1;
-										}	
+										}
+                                        
+                                        var testPos = pos;
+                                        
+                                        testPos.x = testPos.x - a[0];
+                                        testPos.y = testPos.y - a[1];
+                                        
+                                        if(isInsideMap(config, testPos) === false){
+                                            isAbleToShoot = 0;
+                                        }
                                         
 										if(isAbleToShoot==1) {
 											bot.cannon(pos.x - a[0], pos.y - a[1]);
@@ -399,6 +427,8 @@ module.exports = function Ai() {
 		
 		return pos;  
 	}
+    
+
 	
 	/* Tämä ei toimi 
 	function erasePositions(array1, array2) {
@@ -464,6 +494,14 @@ module.exports = function Ai() {
 	  
 	  return pos;  
   }
+  
+    function isInsideMap(config, pos){
+        if (position.distance(pos, position.origo) >= config.fieldRadius) {
+            return false;
+        }
+        return true;
+    
+    }
   
 
   function getPriorities(events) {
