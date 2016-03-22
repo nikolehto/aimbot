@@ -158,7 +158,7 @@ module.exports = function Ai() {
 																					
 											var minDistanceFromShip = 10;
 											ourPositions.forEach(function(pod) {
-												var mincanditate = position.distance(pod, pos);
+												var mincanditate = position.distance(pod, position.make(shootx, shooty));
 												if (mincanditate < minDistanceFromShip) {
 													minDistanceFromShip = mincanditate;
 												}
@@ -196,11 +196,26 @@ module.exports = function Ai() {
                                         if(a == null){
                                             break;
                                         }
+										var shootx = pos.x - a[0];
+										var shooty = pos.y - a[1];
+										
+										var isAbleToShoot = 0;
+										var minDistanceFromShip = 10;
+										ourPositions.forEach(function(pod) {
+											var mincanditate = position.distance(pod, position.make(shootx, shooty));
+											if (mincanditate < minDistanceFromShip) {
+												minDistanceFromShip = mincanditate;
+											}
+										});
+										
+										if (minDistanceFromShip > config.cannon) {
+											isAbleToShoot = 1;
+										}	
                                         
-                                        bot.cannon(pos.x - a[0], pos.y - a[1]);
-
-                                        delete availableBots[botId];
-
+										if(isAbleToShoot==1) {
+											bot.cannon(pos.x - a[0], pos.y - a[1]);
+											delete availableBots[botId];
+										}
                                     }
                                     
                                 }
@@ -219,13 +234,26 @@ module.exports = function Ai() {
 										
                                         if(a == null){
                                             break;
-                                        }
-
+                                        }var shootx = pos.x - a[0];
+										var shooty = pos.y - a[1];
 										
-                                        bot.cannon(pos.x - a[0], pos.y - a[1]);
+										var isAbleToShoot = 0;
+										var minDistanceFromShip = 10;
+										ourPositions.forEach(function(pod) {
+											var mincanditate = position.distance(pod, position.make(shootx, shooty));
+											if (mincanditate < minDistanceFromShip) {
+												minDistanceFromShip = mincanditate;
+											}
+										});
+										
+										if (minDistanceFromShip > config.cannon) {
+											isAbleToShoot = 1;
+										}	
                                         
-
-                                        delete availableBots[botId];
+										if(isAbleToShoot==1) {
+											bot.cannon(pos.x - a[0], pos.y - a[1]);
+											delete availableBots[botId];
+										}
                                     }
                                 }
                                 
