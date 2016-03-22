@@ -270,11 +270,22 @@ module.exports = function Ai() {
 	function selectRadar(bot) {
 		var radarPositions = position.neighbours(position.origo, config.fieldRadius - (config.radar - 1)); // Poista reunoilta kaistaleet joita ei skannata
 		radarPositions.push(position.origo);
+		
+		ourPositions.forEach(function(pod) {
+			var neighbours = position.neighbours(pod, (config.see + config.radar));
+			//console.log(radarPositions);
+			console.log("LENGTH: " + radarPositions.length)
+			radarPositions = erasePositions(radarPositions, neighbours);
+			
+
+		}
+		);
+		
+		
 		// em. tekee listan kaikista sijainneista joista on mahdollista skannata kartan reunaan asti. 
 		
 		// TODO:
 		// Poista omien bottien naapuristot tästä listasta, huomioi myös bottien tulevat liikkeet. 
-		
 		
 		  // Skannaa vain kenttää, (väliaikainen älä skannaa itseä)
 		  var minDistanceFromShip=0; // Korvaa tämä poistamalla kaikki laivojen sijainnit radarPositionsista
@@ -288,6 +299,28 @@ module.exports = function Ai() {
 		  
 		  return pos;  
 	}
+	
+	/* Tämä ei toimi 
+	function erasePositions(array1, array2) {
+		array1.filter(function(el) {
+			var index = -1;
+		
+			for(var i = 0, len = array2.length; i < len; i++) {
+				if (array2[i].x === el.x && array2[i].y === el.y) {
+					return false;
+			}
+		}
+		
+		if (index == -1) 
+			{
+				return true;
+			}
+		}
+		);
+		
+		return array1;
+	}
+	*/
 	
     _.each(events, function(event) {
       if (event.event === "noaction") {
