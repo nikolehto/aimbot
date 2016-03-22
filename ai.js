@@ -58,21 +58,13 @@ module.exports = function Ai() {
 	events.forEach(function(event) {
         if (event.event === "damaged") {
           damaged.push(event);
+		  detected.push(event);
 		  console.log("Someone hit us: ", event.botId);
         } 
 		
 		else if (event.event === "see" || event.event === "radarEcho") { 
 		  see.push(event);
-          console.log("We detected bot at", event.pos.x, event.pos.y); 
-		  
-			if (event.event === "see") {	// Meidät on myös havaittu
-				if (ourBotIds.indexOf(event.source)) {
-					var tempevent = {};
-					tempevent.event = event.event;
-					tempevent.botId = event.source;
-					detected.push(tempevent);
-				}
-			}
+          console.log("We detected bot at", event.pos.x, event.pos.y);
 		} 
 		
 		else if (event.event === "hit") {
@@ -80,8 +72,17 @@ module.exports = function Ai() {
           console.log("Our bot hit:", event.botId);
 		} 
 		
-
-		if (event.event === "detected") {
+		if (event.event === "see") {	// Meidät on havaittu
+				if (ourBotIds.indexOf(event.source) > -1) {
+					console.log("We have been seen", event.pos.x, event.pos.y);
+					var tempevent = {};
+					tempevent.event = event.event;
+					tempevent.botId = event.source;
+					detected.push(tempevent);
+				}
+			}
+			
+		else if (event.event === "detected") {
 		  detected.push(event);
           //console.log("Enemy detected our bot at", event.pos.x, event.pos.y); 
         }
@@ -142,7 +143,7 @@ module.exports = function Ai() {
                 break;
                 case "Scan":
                     //skannaa satunnaista paikkaa
-                    
+                   
                     //noustaan perse edellä puuhun
                     for (var botId in availableBots) {
                         if (availableBots.hasOwnProperty(botId)) {
@@ -210,6 +211,9 @@ module.exports = function Ai() {
 			moveLength = 0;	
 		  }
 		  loopLimit--;
+	  }
+	  if (loopLimit < 1)  {
+	  console.log("########### INCREASE LOOP LIMIT IN MOVE FUNCTION ##############");
 	  }
 	  
 	  return pos;  
