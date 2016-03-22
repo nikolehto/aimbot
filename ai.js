@@ -4,7 +4,7 @@ var _ = require("lodash");
 var position = require("../../position.js");
 var taskList;
 var lastKnownPositions;
-var scannedAreas;
+var scannedAreas = [];
 
 
 
@@ -270,34 +270,46 @@ module.exports = function Ai() {
 	function selectRadar(bot) {
 		var radarPositions = position.neighbours(position.origo, config.fieldRadius - (config.radar - 1)); // Poista reunoilta kaistaleet joita ei skannata
 		radarPositions.push(position.origo);
-		
-		ourPositions.forEach(function(pod) {
-			var neighbours = position.neighbours(pod, (config.see + config.radar));
-			//console.log(radarPositions);
-			console.log("LENGTH: " + radarPositions.length)
-			radarPositions = erasePositions(radarPositions, neighbours);
-			
-
-		}
-		);
-		
-		
 		// em. tekee listan kaikista sijainneista joista on mahdollista skannata kartan reunaan asti. 
+
+		var minDistanceFromShip=0; // Korvaa tämä poistamalla kaikki laivojen sijainnit radarPositionsista
+		var minDistanceFromScannedArea=0;
+		var loopLimit=100;
+		var pos;
+		while (loopLimit>0 && (minDistanceFromShip<(config.radar + config.see) || minDistanceFromScannedArea<(config.radar + (config.radar -1)))) { 
+			var min = 10; // update minDistance from our ship
+			pos = radarPositions[randInt(0, radarPositions.length - 1)];
+			ourPositions.forEach(function(pod) {
+				var mincanditate = position.distance(position.make(pod.x, pod.y), pos);
+				if (mincanditate < min) {
+					minDistanceFromShip = mincanditate;
+					min = mincanditate;
+				}
+			});
+			
+			min = 20; // updateMinDistance from our lastscannedAreas
+			scannedAreas.forEach(function(pod) {
+				var mincanditate = position.distance(pod, pos);
+				
+				if (mincanditate < min) {
+					minDistanceFromScannedArea = mincanditate;
+					min = mincanditate;
+				}
+			});
+			
+			
+			
+			loopLimit--;
+		}
 		
-		// TODO:
-		// Poista omien bottien naapuristot tästä listasta, huomioi myös bottien tulevat liikkeet. 
+		if (loopLimit < 1) {
+			console.log("############# LOOP LIMIT SCANNEDAREAS ######################")
+		}
+		//console.log("SCANNED AREAS " + scannedAreas);
+		scannedAreas.unshift(pos);
+		scannedAreas = scannedAreas.slice(0,10);
 		
-		  // Skannaa vain kenttää, (väliaikainen älä skannaa itseä)
-		  var minDistanceFromShip=0; // Korvaa tämä poistamalla kaikki laivojen sijainnit radarPositionsista
-		  var loopLimit=100;
-		  var pos;
-		  while (loopLimit>0 && minDistanceFromShip<config.radar) { 
-			  pos = radarPositions[randInt(0, radarPositions.length - 1)];
-			  minDistanceFromShip = position.distance(position.make(bot.x, bot.y), pos);
-			  loopLimit--;
-		  }
-		  
-		  return pos;  
+		return pos;  
 	}
 	
 	/* Tämä ei toimi 
