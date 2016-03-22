@@ -253,6 +253,24 @@ module.exports = function Ai() {
                     }
                 break;
                 
+                case "ScanLoop":
+                    if(see.length != 0){
+                        for (var botId in availableBots) {
+                            if (availableBots.hasOwnProperty(botId)) {
+                                var bot = findBot2(bots, botId);
+                                //console.log(
+                                //var pos = selectRadar(bot);
+                                var pos = see[0].pos;
+                                //console.log(pos.x, pos.y);
+                                bot.radar(pos.x, pos.y);
+                                
+                                delete availableBots[botId];
+                                break;
+                                }
+                        }
+                    }
+                
+                break;
                 
                 default:
             
@@ -401,7 +419,7 @@ module.exports = function Ai() {
   
 
   function getPriorities(events) {
-        var taskPriorities = ["Dodge", "Attack", "Scan"];
+        var taskPriorities = ["Dodge", "Attack","ScanLoop", "Scan"];
   
         return taskPriorities;
   }
