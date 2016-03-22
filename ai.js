@@ -23,6 +23,8 @@ module.exports = function Ai() {
     var ourPositions =  []; // pos1, ...
 	var availableBots = {}; // id:index
     
+    //var availableBots = [];
+    
 	var die = []; // Viimekierroksen kuolleet botit
 
 	// Meidän toimet 
@@ -123,18 +125,91 @@ module.exports = function Ai() {
                 case "Attack":
                 //jos vihollinen huomattu niin ammu
                     if(see.length != 0){//ampuu aina yhtä havaittua kaikilla
-                        for (var botId in availableBots) {
-                            if (availableBots.hasOwnProperty(botId)) {
-                                var bot = findBot2(bots, botId);
-                                console.log("ammu");
-                                var pos = see[0].pos;
-                                console.log(pos.x, pos.y);
-                                bot.cannon(pos.x, pos.y);
+                        
+                        //switch(
+                        
+                        var availableCount = Object.keys(availableBots).length;
+                        var coordinateAdditions = [];
+                        switch(availableCount){
+                            
+                            case 0:
+                                break;
+                            
+                            case 1:
+                                coordinateAdditions.push([1, 0]);
                                 
-                                delete availableBots[botId];
-                            }
+                                for (var botId in availableBots) {
+                                    if (availableBots.hasOwnProperty(botId)) {
+                                        var bot = findBot2(bots, botId);
+                                        var pos = see[0].pos;
+
+                                        var a = coordinateAdditions.pop();
+                                        
+                                        if(a == null){
+                                            break;
+                                        }
+                                        
+                                        bot.cannon(pos.x - a[0], pos.y - a[1]);
+                                        
+                                        delete availableBots[botId];
+                                        break;
+                                    }
+                                    
+                                }
+                                
+                                break;
+                            case 2:
+                                coordinateAdditions.push([1, 0]);
+                                coordinateAdditions.push([-1, 0]);
+                                for (var botId in availableBots) {
+                                    if (availableBots.hasOwnProperty(botId)) {
+                                        var bot = findBot2(bots, botId);
+                                        //console.log("ammu");
+                                        var pos = see[0].pos;
+                                        console.log(pos.x, pos.y);
+                                        
+                                        var a = coordinateAdditions.pop();
+                                        
+                                        if(a == null){
+                                            break;
+                                        }
+                                        
+                                        bot.cannon(pos.x - a[0], pos.y - a[1]);
+
+                                        delete availableBots[botId];
+
+                                    }
+                                    
+                                }
+                                break;
+                            case 3:
+                            default:
+                                coordinateAdditions.push([1, 0]);
+                                coordinateAdditions.push([-1, 1]);
+                                coordinateAdditions.push([0, -1]);
+                                
+                                for (var botId in availableBots) {
+                                    if (availableBots.hasOwnProperty(botId)) {
+                                        var bot = findBot2(bots, botId);
+
+                                        var pos = see[0].pos;
+
+                                        var a = coordinateAdditions.pop();
+                                        
+                                        if(a == null){
+                                            break;
+                                        }
+                                        
+                                        bot.cannon(pos.x - a[0], pos.y - a[1]);
+                                        
+
+                                        delete availableBots[botId];
+                                    }
+                                }
+                                
+                        
                         }
-                    
+
                     }
                         
                     //}
