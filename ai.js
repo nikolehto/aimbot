@@ -137,21 +137,44 @@ module.exports = function Ai() {
                             
                             case 1:
                                 coordinateAdditions.push([1, 0]);
+								coordinateAdditions.push([-1, 1]);
+                                coordinateAdditions.push([0, -1]);
+								coordinateAdditions.push([1, -1]);
                                 
                                 for (var botId in availableBots) {
                                     if (availableBots.hasOwnProperty(botId)) {
                                         var bot = findBot2(bots, botId);
                                         var pos = see[0].pos;
-
-                                        var a = coordinateAdditions.pop();
+										
+										// tarkista onko omia lähimailla
+										var isAbleToShoot = 0;
+										while(isAbleToShoot== 0) {
+											var a = coordinateAdditions.pop();
+											if(a == null){
+												break;
+											}
+											var shootx = pos.x - a[0];
+											var shooty = pos.y - a[1];
+																					
+											var minDistanceFromShip = 10;
+											ourPositions.forEach(function(pod) {
+												var mincanditate = position.distance(pod, pos);
+												if (mincanditate < minDistanceFromShip) {
+													minDistanceFromShip = mincanditate;
+												}
+											});
+											
+											if (minDistanceFromShip > config.cannon) {
+												isAbleToShoot = 1;
+												break;
+											}	
+										}
+										
+										if (isAbleToShoot == 1) {
+											bot.cannon(shootx, shooty); 
+											delete availableBots[botId];
+										}
                                         
-                                        if(a == null){
-                                            break;
-                                        }
-                                        
-                                        bot.cannon(pos.x - a[0], pos.y - a[1]);
-                                        
-                                        delete availableBots[botId];
                                         break;
                                     }
                                     
@@ -191,15 +214,14 @@ module.exports = function Ai() {
                                 for (var botId in availableBots) {
                                     if (availableBots.hasOwnProperty(botId)) {
                                         var bot = findBot2(bots, botId);
-
                                         var pos = see[0].pos;
-
                                         var a = coordinateAdditions.pop();
-                                        
+										
                                         if(a == null){
                                             break;
                                         }
-                                        
+
+										
                                         bot.cannon(pos.x - a[0], pos.y - a[1]);
                                         
 
