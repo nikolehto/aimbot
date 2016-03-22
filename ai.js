@@ -39,15 +39,12 @@ module.exports = function Ai() {
 		if (bot.alive) {
 			//availableBots.push(bot)
             availableBots[bot.botId] = bots.indexOf(bot);
-			ourPositions.push(bot.pos);
+			var tempPosition = {}; // Tallenna nykyinen sijainti
+			tempPosition.x = bot.x;
+			tempPosition.y = bot.y;
+			ourPositions.push(tempPosition);
 		}
 	});
-
-	/*
-	availableBots.forEach(function(bot) {
-		console.log("Our bot is alive:", bot.botId);
-	});
-	*/
 
 	events.forEach(function(event) {
         if (event.event === "damaged") {
@@ -90,29 +87,36 @@ module.exports = function Ai() {
   
 	var priorities = getPriorities(events); // Hae prioriteettilista
 	
-	var radarPositions = position.neighbours(position.origo, config.fieldRadius - config.radar);
-	radarPositions.push(position.origo);
-	// em. tekee listan kaikista sijainneista joista on mahdollista skannata kartan reunaan asti. 
-	// TODO:
-	// Poista omien bottien naapuristot tästä listasta, huomioi myös bottien tulevat liikkeet. 
-	
+
 	var botsOnMission = [];
     for (var j = 0; j < priorities.length; j++) {
         var pr = priorities[j];
         
-   
             switch(pr){
                 case "Dodge":
                     //jos huomattu tai osunut niin väistä
                     detected.forEach(function(det) {
 						var botId = det.botId;
-
-                        var bot = findBot2(bots, botId);
-						var pos = selectMove(config, bot);
-						console.log(pos.x, pos.y);
-						bot.move(pos.x, pos.y);
 						
-						delete availableBots[botId];
+						// rautalankaa, sama botti saattaa tulla havaituksi monta kertaa.
+						if (botId in availableBots) {
+							var bot = findBot2(bots, botId);
+							console.log("botID: " + bot.botId)
+							var pos = selectMove(config, bot);
+							console.log(pos.x, pos.y);
+							bot.move(pos.x, pos.y);
+							
+							// HOX! Tämä kaikkiin liikkumisfunktioihin
+							ourPositions.forEach(function(temp) {
+								console.log("x: " + temp.x + ", y: " + temp.y );
+							});
+							updateBotPositions(bot.x, bot.y, pos.x, pos.y);
+							ourPositions.forEach(function(temp) {
+								console.log("x: " + temp.x + ", y: " + temp.y );
+							});
+							
+							delete availableBots[botId];
+						}
 						});
                
                 break;
@@ -143,7 +147,7 @@ module.exports = function Ai() {
                         if (availableBots.hasOwnProperty(botId)) {
                             var bot = findBot2(bots, botId);
                             
-                            var pos = selectRadar(config, bot,radarPositions);
+                            var pos = selectRadar(bot);
                             console.log(pos.x, pos.y);
                             bot.radar(pos.x, pos.y);
                             
@@ -159,17 +163,57 @@ module.exports = function Ai() {
       
     }
     
-    /*
-    ourBotsAlive.forEach(function(bot) {
-
-	  var pos = selectMove(config, bot);
-	  //var pos = selectRadar(config, bot, radarPositions);
-	  
-	  console.log(pos.x, pos.y);
-      bot.move(pos.x, pos.y);
-	  //bot.radar(pos.x, pos.y);
-    });
-*/
+	function updateBotPositions(ox, oy, nx, ny) {
+		var opos = {}; // missä on
+		var npos = {}; // mihin liikkuu
+		opos.x = ox;
+		opos.y = oy;
+		npos.x = nx;
+		npos.y = ny;
+		
+		var index = -1;
+		
+		for(var i = 0, len = ourPositions.length; i < len; i++) {
+			if (ourPositions[i].x === opos.x && ourPositions[i].y === opos.y) {
+				console.log(ourPositions[i].x + " == " + opos.x + " and " + ourPositions[i].y + " == " + opos.y);
+				index = i;
+				break;
+			}
+			else {
+				console.log(ourPositions[i].x + " != " + opos.x + " or " + ourPositions[i].y + " != " + opos.y);
+			}
+		}
+		
+		if (index > -1) {
+			ourPositions[index] = npos; // Korvaa vanha positio uudella 
+		}
+		else {
+			console.log("####### ERROR IN UPDATEPOSITIONS ###########");
+		}	
+	}
+	
+	function selectRadar(bot) {
+		var radarPositions = position.neighbours(position.origo, config.fieldRadius - (config.radar - 1)); // Poista reunoilta kaistaleet joita ei skannata
+		radarPositions.push(position.origo);
+		// em. tekee listan kaikista sijainneista joista on mahdollista skannata kartan reunaan asti. 
+		
+		// TODO:
+		// Poista omien bottien naapuristot tästä listasta, huomioi myös bottien tulevat liikkeet. 
+		
+		
+		  // Skannaa vain kenttää, (väliaikainen älä skannaa itseä)
+		  var minDistanceFromShip=0; // Korvaa tämä poistamalla kaikki laivojen sijainnit radarPositionsista
+		  var loopLimit=100;
+		  var pos;
+		  while (loopLimit>0 && minDistanceFromShip<config.radar) { 
+			  pos = radarPositions[randInt(0, radarPositions.length - 1)];
+			  minDistanceFromShip = position.distance(position.make(bot.x, bot.y), pos);
+			  loopLimit--;
+		  }
+		  
+		  return pos;  
+	}
+	
     _.each(events, function(event) {
       if (event.event === "noaction") {
         console.log("Bot did not respond in required time", event.data);
@@ -208,20 +252,6 @@ module.exports = function Ai() {
 	  }
 	  if (loopLimit < 1)  {
 	  console.log("########### INCREASE LOOP LIMIT IN MOVE FUNCTION ##############");
-	  }
-	  
-	  return pos;  
-  }
-  
-    function selectRadar(config, bot, radarPositions) {
-      // Skannaa vain kenttää, (väliaikainen älä skannaa itseä)
-      var minDistanceFromShip=0; // Korvaa tämä poistamalla kaikki laivojen sijainnit radarPositionsista
-	  var loopLimit=100;
-	  var pos;
-	  while (loopLimit>0 && minDistanceFromShip<config.radar) { 
-		  pos = radarPositions[randInt(0, radarPositions.length - 1)];
-		  minDistanceFromShip = position.distance(position.make(bot.x, bot.y), pos);
-		  loopLimit--;
 	  }
 	  
 	  return pos;  
