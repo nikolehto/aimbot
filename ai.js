@@ -167,7 +167,7 @@ module.exports = function Ai() {
 												break;
 											}	
                                             
-                                            var testPos = pos;
+                                            var testPos = position.make(pos.x,pos.y);
                                             
                                             testPos.x = testPos.x - a[0];
                                             testPos.y = testPos.y - a[1];
@@ -222,7 +222,7 @@ module.exports = function Ai() {
 											isAbleToShoot = 1;
 										}	
                                         
-                                        var testPos = pos;
+                                        var testPos = position.make(pos.x,pos.y);
                                         
                                         testPos.x = testPos.x - a[0];
                                         testPos.y = testPos.y - a[1];
@@ -269,7 +269,7 @@ module.exports = function Ai() {
 											isAbleToShoot = 1;
 										}
                                         
-                                        var testPos = pos;
+                                        var testPos = position.make(pos.x,pos.y);
                                         
                                         testPos.x = testPos.x - a[0];
                                         testPos.y = testPos.y - a[1];
@@ -496,7 +496,7 @@ module.exports = function Ai() {
   }
   
     function isInsideMap(config, pos){
-        if (position.distance(pos, position.origo) >= config.fieldRadius) {
+        if (position.distance(pos, position.origo) > config.fieldRadius) {
             return false;
         }
         return true;
