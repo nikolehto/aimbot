@@ -19,22 +19,16 @@ var botNames = [
 
 module.exports = function Ai() {
   function makeDecisions(roundId, events, bots, config) {
-  
-
-	//var availableBots = []; // Meidän elossa olevat botit   /avain botin id ja arvo botin indeksi
-    
-
 	var ourBotIds = [];
-    var availableBots = {};
+    var ourPositions =  []; // pos1, ...
+	var availableBots = {}; // id:index
     
 	var die = []; // Viimekierroksen kuolleet botit
 
-	
 	// Meidän toimet 
 	var hit = []; // Osutut botit
 	var see  = []; // Nähdyt botit. Pelkkiä pos objekteja 
 
-	
 	// Vihollisen toimet
 	var damaged = [];  // Meidän botit joita vihollinen osui
 	var detected = []; // Vihollinsen havaitsemat meidän botit
@@ -45,7 +39,7 @@ module.exports = function Ai() {
 		if (bot.alive) {
 			//availableBots.push(bot)
             availableBots[bot.botId] = bots.indexOf(bot);
-            
+			ourPositions.push(bot.pos);
 		}
 	});
 
